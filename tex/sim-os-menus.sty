@@ -1,0 +1,469 @@
+% Author     : C. Pierquet
+% licence    : Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txtf
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sim-os-menus}[2023/11/13 0.1.0 Present 'context menu'/'terminal'/'windows', with TikZ or tcolorbox]
+%0.1.0	Initial version
+
+%====PACKAGES
+\RequirePackage{tikz,pgf,pgffor}
+\usetikzlibrary{calc,positioning}
+\RequirePackage{calc}
+\RequirePackage{fontawesome5}
+\RequirePackage{simplekv}
+\RequirePackage{xintexpr}
+\RequirePackage{listofitems}
+\RequirePackage{xstring}
+\RequirePackage{settobox}
+\RequirePackage{tabularray}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{breakable,fitting,skins,listings,listingsutf8,hooks}
+
+%****CONTEXTMENU****
+%====USEFULL
+\definecolor{ColBackContextMenu}{HTML}{f0f0f0}%
+\definecolor{ColHLContextMenu}{HTML}{90c8f6}%
+\newlength{\ContMenOffsetIcon}\setlength{\ContMenOffsetIcon}{0pt}
+\newlength{\ContMenOffsetArrow}\setlength{\ContMenOffsetArrow}{1em}
+\newlength{\ContMenOffsetV}\setlength{\ContMenOffsetV}{6pt}
+\newlength{\ContMenOffset}\setlength{\ContMenOffset}{12pt}
+\newlength{\ContMenWdth}\newlength{\ContMenWdthTmp}
+\newlength{\ContMenHgth}\newlength{\ContMenHgthTmp}
+\newsavebox{\maboitemenucontext}
+\newsavebox{\maboitelogomenucontext}
+
+%====KEYS
+\defKV[ContextMenu]{%
+	ColBack=\def\ContMenColBack{#1},%
+	ColHL=\def\ContMenColHL{#1},%
+	Font=\def\ContMenuFonte{#1},%
+	MarginV=\setlength{\ContMenOffsetV}{#1},%
+	MarginH=\setlength{\ContMenOffset}{#1},
+	Arrow=\def\ContMenArrow{#1},%
+	ListSeps=\xdef\ContMenSep{#1},%
+	ListIcons=\xdef\ContMenIcons{#1},%
+	Space=\def\ContMenSpace{#1},%
+	ColItems=\def\ContMenuColItems{#1},%
+	ListOffsets=\xdef\ContMenOffsets{#1}
+}
+
+\setKVdefault[ContextMenu]{%
+	ColBack=ColBackContextMenu,%
+	ColHL=ColHLContextMenu,%
+	Rounded=true,%
+	Font=\normalsize\normalfont,%
+	MarginV=6pt,%
+	MarginH=12pt,%
+	Arrow=\faCaretRight,%
+	ListSeps={},%
+	ListIcons={},%
+	Icons=false,%
+	Bar=true,%
+	Space=-0.125,%
+	ColItems=black,%
+	ListOffsets={}
+}
+
+%====MACRO
+\NewDocumentCommand\ContextMenu{ O{} m D<>{} }{%
+	%clés
+	\useKVdefault[ContextMenu]%
+	\setKV[ContextMenu]{#1}%
+	\setsepchar{§/,}%
+	\readlist*\DonnesContMenu{#2}%
+	\IfEq{\ContMenSep}{}%
+		{}%
+		{
+			\setsepchar[.]{/.,}%
+			\readlist*\LstSepContMenu{\ContMenSep}%
+		}%
+	\IfEq{\ContMenIcons}{}%
+		{}%
+		{
+			\setsepchar[.]{/.,}%
+			\readlist*\LstIconsContMenu{\ContMenIcons}%
+		}%
+	\IfEq{\ContMenOffsets}{}%
+		{}%
+		{
+			\setsepchar{,}%
+			\readlist*\LstOffsetsContMenu{\ContMenOffsets}%
+		}%
+	%colors of items
+	\IfSubStr{\ContMenuColItems}{/}%
+		{%
+			\StrCut{\ContMenuColItems}{/}{\ContMenuColItemsE}{\ContMenuColItemsH}%
+		}%
+		{%
+			\xdef\ContMenuColItemsE{\ContMenuColItems}\xdef\ContMenuColItemsH{\ContMenuColItems}
+		}%
+	%height of lines
+	\sbox{\maboitemenucontext}{\ContMenuFonte qSÉ}%
+	\settoboxtotalheight{\ContMenHgthTmp}{\maboitemenucontext}%
+	\ifboolKV[ContextMenu]{Icons}%
+		{%
+			\sbox{\maboitelogomenucontext}{\ContMenuFonte\faCreditCard}%
+			\settoboxwidth{\ContMenOffsetIcon}{\maboitelogomenucontext}%
+		}%
+		{%
+			\setlength{\ContMenOffsetIcon}{0pt}%
+		}%
+	\setlength{\ContMenHgth}{\ContMenHgthTmp+2\ContMenOffsetV}%
+	%environment
+	\begin{tikzpicture}[#3]
+		\ifboolKV[ContextMenu]{Rounded}%
+			{\tikzset{contextborder/.style={rounded corners=4pt}}}%
+			{\tikzset{contextborder/.style={}}}%
+		%--first node
+		\coordinate (I-1-1) at (0,0) ;%
+		%--levels one by one--
+		\foreach \niv in {1,...,\DonnesContMenulen}{%
+			\def\nivmun{\inteval{\niv-1}}%
+			\def\nivpun{\inteval{\niv+1}}%
+			\itemtomacro\DonnesContMenu[\niv]{\ContMenNivTmp}%
+			\setsepchar{,}\readlist*\ContMenLstItem{\ContMenNivTmp}%
+			%left nodes
+			\coordinate (I-\niv-2) at ($(I-\niv-1)+(0,{-\ContMenHgth})$) ;%
+			\xintifboolexpr{\ContMenLstItemlen >= 2}%
+				{%
+					\foreach \i in {2,...,\ContMenLstItemlen}{%
+						\xdef\j{\inteval{\i+1}}%
+						\coordinate (I-\niv-\j) at ($(I-\niv-\i)+(0,{-\ContMenHgth})$) ;%
+					}
+				}%
+				{}%
+			%width calculus
+			\itemtomacro\ContMenLstItem[1]{\itemtmp}%
+			\IfEndWith{\itemtmp}{(*)}{\StrGobbleRight{\itemtmp}{3}[\itemtmp]}{}%
+			\IfEndWith{\itemtmp}{(>)}{\StrGobbleRight{\itemtmp}{3}[\itemtmp]}{}%
+			\sbox{\maboitemenucontext}{\pgfinterruptpicture\ContMenuFonte\itemtmp\endpgfinterruptpicture}%
+			\settoboxwidth{\ContMenWdthTmp}{\maboitemenucontext}%
+			\xdef\tmplistwidth{\the\ContMenWdthTmp}%
+			\xintifboolexpr{\ContMenLstItemlen >= 2}%calul des autres si besoin
+				{%
+					\foreach \i in {2,...,\ContMenLstItemlen}{%
+						\itemtomacro\ContMenLstItem[\i]{\itemtmp}%
+						\IfEndWith{\itemtmp}{(*)}{\StrGobbleRight{\itemtmp}{3}[\itemtmp]}{}%
+						\IfEndWith{\itemtmp}{(>)}{\StrGobbleRight{\itemtmp}{3}[\itemtmp]}{}%
+						\sbox{\maboitemenucontext}{\pgfinterruptpicture\ContMenuFonte\itemtmp\endpgfinterruptpicture}%
+						\settoboxwidth{\ContMenWdthTmp}{\maboitemenucontext}%
+						\xdef\tmplistwidth{\tmplistwidth,\the\ContMenWdthTmp}%
+					}%
+				}%
+				{}%
+			\pgfmathsetlength{\ContMenWdth}{max(\tmplistwidth)}%
+			\setlength{\ContMenWdth}{\ContMenWdth+\ContMenOffsetIcon+2\ContMenOffset+\ContMenOffsetArrow}%calcul de la 1ère largeur
+			%boxes
+			\draw[contextborder,draw=none,fill=\ContMenColBack] (I-\niv-1) rectangle++ ({\ContMenWdth},{-\ContMenLstItemlen*\ContMenHgth}) ;
+			\ifboolKV[ContextMenu]{Icons}%
+				{%
+					\ifboolKV[ContextMenu]{Bar}{\draw[thick,white] ($(I-\niv-1)+({\ContMenOffset+\ContMenOffsetIcon-3pt},{-0.5\ContMenOffsetV})$) --++ (0,{-\ContMenLstItemlen*\ContMenHgth+\ContMenOffsetV}) ;}{}%
+				}%
+				{}%
+			%labels
+			\foreach \i in {1,...,\ContMenLstItemlen}{%
+				\itemtomacro\ContMenLstItem[\i]{\itemtmp}%
+				\IfEndWith{\itemtmp}{(*)}%
+					{%
+						\StrGobbleRight{\itemtmp}{3}[\itemtmp]%
+						%offset si delared ?
+						
+						\IfEq{\ContMenOffsets}{}%
+							{%
+								\coordinate (I-\nivpun-1) at ($(I-\niv-\i)+({\ContMenWdth+\ContMenSpace\ContMenOffset},{0})$) ;
+							}%
+							{%
+								\xintifboolexpr{\niv < \DonnesContMenulen}%
+									{%
+										\itemtomacro\LstOffsetsContMenu[\niv]{\offsettmp}%
+										\coordinate (I-\nivpun-1) at ($(I-\niv-\i)+({\ContMenWdth+\ContMenSpace\ContMenOffset},{\offsettmp*\ContMenHgth})$) ;
+									}%
+									{}%
+							}%
+						
+						\draw[contextborder,draw=none,fill=\ContMenColHL,fill opacity=0.65] ($(I-\niv-\i)+({0.25\ContMenOffset},{-0.5\ContMenOffsetV})$) rectangle++ ({\ContMenWdth-0.5\ContMenOffset},{-\ContMenHgth+\ContMenOffsetV}) ;
+						%test if char at the end
+						\IfEndWith{\itemtmp}{(>)}%
+							{%
+								\StrGobbleRight{\itemtmp}{3}[\itemtmp]%
+								\draw ($(I-\niv-\i)+(0,{-0.5*\ContMenHgth})$) node[inner sep=0pt,right={\ContMenOffset+\ContMenOffsetIcon},font=\ContMenuFonte,text=\ContMenuColItemsH] {\itemtmp} ;
+								\draw ($(I-\niv-\i)+({\ContMenWdth-0.5\ContMenOffset},{-0.5*\ContMenHgth})$) node[inner sep=0pt,left=0.25\ContMenOffset,font=\ContMenuFonte,text=\ContMenuColItemsH] {$\vcenter{\hbox{\ContMenArrow}}$} ;
+							}%
+							{%
+								\draw ($(I-\niv-\i)+(0,{-0.5*\ContMenHgth})$) node[inner sep=0pt,right={\ContMenOffset+\ContMenOffsetIcon},font=\ContMenuFonte,text=\ContMenuColItemsH] {\itemtmp} ;
+							}%
+					}%
+					{%
+						\IfEndWith{\itemtmp}{(>)}%
+							{%
+								\StrGobbleRight{\itemtmp}{3}[\itemtmp]%
+								\draw ($(I-\niv-\i)+(0,{-0.5*\ContMenHgth})$) node[inner sep=0pt,right={\ContMenOffset+\ContMenOffsetIcon},font=\ContMenuFonte] {\itemtmp} ;
+								\draw ($(I-\niv-\i)+({\ContMenWdth-0.5\ContMenOffset},{-0.5*\ContMenHgth})$) node[inner sep=0pt,left=0.25\ContMenOffset,font=\ContMenuFonte,text=\ContMenuColItemsE] {$\vcenter{\hbox{\ContMenArrow}}$} ;
+							}%
+							{%
+								\draw ($(I-\niv-\i)+(0,{-0.5*\ContMenHgth})$) node[inner sep=0pt,right={\ContMenOffset+\ContMenOffsetIcon},font=\ContMenuFonte,text=\ContMenuColItemsE] {\itemtmp} ;
+							}%
+					}%
+			}%
+			%border
+			\draw[contextborder,thick,\ContMenColBack!75!black] (I-\niv-1) rectangle++ ({\ContMenWdth},{-\ContMenLstItemlen*\ContMenHgth}) ;
+			%separators
+			\IfEq{\ContMenSep}{}%
+				{}%
+				{%
+					\itemtomacro\LstSepContMenu[\niv]{\lstsepniv}%
+					\IfEq{\lstsepniv}{}%
+						{}%
+						{%
+							\setsepchar{,}%
+							\readlist*\lstsepnivpos{\lstsepniv}
+							\foreachitem\sep\in\lstsepnivpos{\def\seppun{\inteval{\sep+1}}\draw[thick,\ContMenColBack!75!black] ($(I-\niv-\seppun)+({0.25\ContMenOffset},0)$) --++ ({\ContMenWdth-0.5\ContMenOffset},0) ;}%
+						}%
+				}%
+			%icons
+			\ifboolKV[ContextMenu]{Icons}%
+				{%
+					\IfEq{\ContMenIcons}{}%
+						{}%
+						{%
+							\itemtomacro\LstIconsContMenu[\niv]{\lsticonsniv}%
+							\IfEq{\lsticonsniv}{}%
+								{}%
+								{%
+									\setsepchar{,}%
+									\readlist*\lsticonsnivpos{\lsticonsniv}%
+									\foreach \i in {1,...,\lsticonsnivposlen}{%
+										\itemtomacro\lsticonsnivpos[\i]{\icontmp}%
+										\itemtomacro\DonnesContMenu[\niv,\i]{\itemtmp}%
+										\IfEndWith{\itemtmp}{(*)}%
+											{%
+												\draw ($(I-\niv-\i)+({0.25\ContMenOffset+0.75\ContMenOffsetIcon},{-0.5*\ContMenHgth})$) node[scale=0.9,inner sep=0pt,font=\ContMenuFonte,text=\ContMenuColItemsH] {$\vcenter{\hbox{\icontmp}}$} ;
+											}%
+											{%
+												\draw ($(I-\niv-\i)+({0.25\ContMenOffset+0.75\ContMenOffsetIcon},{-0.5*\ContMenHgth})$) node[scale=0.9,inner sep=0pt,font=\ContMenuFonte,text=\ContMenuColItemsE] {$\vcenter{\hbox{\icontmp}}$} ;
+											}%
+									}%
+								}%
+						}%
+				}%
+				{}%
+		}%
+	\end{tikzpicture}
+}
+
+%****TERMINAL****
+%====COLORS
+\definecolor{Termmpurple}{RGB}{48,10,36}
+\definecolor{Termmgray}{RGB}{70,72,67}
+\definecolor{Termogray}{RGB}{148,147,141}
+\definecolor{Termoorange}{RGB}{233,101,56}
+\definecolor{Termterminal}{RGB}{80,78,70}
+\definecolor{Termlinux}{RGB}{0,39,51}
+\definecolor{Termwinblue}{HTML}{1883D7}
+\definecolor{Termosxgray}{HTML}{D8D6D9}
+\definecolor{Termosxgreen}{HTML}{1F8B36}
+
+%====WINDOWS (OK)
+\tcbset{StyleTermWindows/.style={%
+		enhanced,boxrule=1pt,arc=1pt,before skip=\baselineskip,after skip=\baselineskip,%
+		colframe=Termwinblue,colback=black,colbacktitle=white,colupper=white,coltitle=black,%
+		titlerule=0.4pt,left=2pt,top=2pt,bottom=2pt,right=2pt,middle=2pt,%
+		fonttitle=\bfseries\small\sffamily
+	}
+}
+
+\setKVdefault[TERMwin]{Title={Terminal Win},Align={center},Width={\linewidth}}
+
+\newcommand\TermWinComm{%
+	\begin{tikzpicture}[thick,scale=0.66]
+		\draw (0,0.5em)--++(1em,0) ; \draw[rounded corners=0.05em] (2em,0) rectangle++ (0.8em,0.8em) ; \draw[rounded corners=0.05em] (2.2em,0.2em) rectangle++ (0.8em,0.8em) ; \draw (4em,1em)--(5em,0) (4em,0)--(5em,1em) ;
+	\end{tikzpicture}%
+}
+
+\newcommand\TermWinTitle{%
+	\begin{tblr}{colsep=0pt,rowsep=0pt,width=\linewidth,colspec={X[l]r}}
+		{\footnotesize\faTerminal}~~\useKV[TERMwin]{Title} & \TermWinComm \\ %
+	\end{tblr}
+}
+
+\NewDocumentEnvironment{TermWin}{ O{} m }
+{%
+	\restoreKV[TERMwin]%
+	\setKV[TERMwin]{#1}%
+	\tcblisting{StyleTermWindows,{\useKV[TERMwin]{Align}},title={\TermWinTitle},listing only,listing engine=listings,listing options={style=tcblatex,language={},basicstyle=\footnotesize\ttfamily},width={\useKV[TERMwin]{Width}},#2}
+}%
+{%
+	\endtcblisting%
+}
+
+%====LINUX (OK)
+\newcommand{\TermUbuntuWhite}{%
+	\begin{tikzpicture}[thick,anchor=base,baseline]
+		\filldraw[Termmgray] (0,0.25em) circle[radius=0.5em] ;
+	\end{tikzpicture}%
+}
+\newcommand{\TermUbuntuMin}{%
+	\begin{tikzpicture}[thick,anchor=base,baseline]
+		\filldraw[color=Termogray!50!white] (0,0.25em) circle[radius=0.5em];
+		\draw[Termterminal](-0.35em,0.25em)--(0.35em,0.25em);
+	\end{tikzpicture}%
+}
+\newcommand{\TermUbuntuClose}{%
+	\begin{tikzpicture}[thick,anchor=base,baseline]
+		\filldraw[color=Termoorange!70!white] (0,0.25em) circle[radius=0.5em];
+		\draw[Termterminal] (-0.32em,-0.07em)--(0.32em,0.57em);
+		\draw[Termterminal] (-0.32em,0.57em)--(0.32em,-0.07em);
+	\end{tikzpicture}%
+}
+\newcommand{\TermUbuntuMax}{%
+	\begin{tikzpicture}[thick,anchor=base,baseline]
+		\filldraw[color=Termogray!50!white] (0,0.25em) circle[radius=0.5em];
+		\draw[Termterminal] (-0.32em,0.5em) rectangle (0.32em,0);
+	\end{tikzpicture}%
+}
+
+\tcbset{StyleTermUniX/.style={%
+		enhanced,boxrule=1pt,arc=4pt,before skip=\baselineskip,after skip=\baselineskip,%
+		colframe=Termmgray,colback=Termmpurple,colbacktitle=Termmgray,colupper=white,coltitle=white,%
+		titlerule=0.4pt,left=2pt,top=2pt,bottom=2pt,right=2pt,middle=2pt,%
+		fonttitle=\bfseries\small\sffamily
+	}
+}
+
+\setKVdefault[TERMnux]{Title={Terminal UNiX},Align={center},Width={\linewidth}}
+
+\newcommand\TermNuxTitle{%
+	\begin{tblr}{colsep=0pt,rowsep=0pt,width=\linewidth,colspec={lX[c]r}}
+		\TermUbuntuWhite~~\TermUbuntuWhite~~\TermUbuntuWhite & \vphantom{p}\useKV[TERMnux]{Title} & \TermUbuntuMin~~\TermUbuntuMax~~\TermUbuntuClose \\
+	\end{tblr}
+}
+
+\NewDocumentEnvironment{TermUnix}{ O{} m }
+{%
+	\restoreKV[TERMnux]%
+	\setKV[TERMnux]{#1}%
+	\tcblisting{StyleTermUniX,{\useKV[TERMnux]{Align}},title={\TermNuxTitle},listing only,listing engine=listings,listing options={style=tcblatex,language={},basicstyle=\footnotesize\ttfamily},width={\useKV[TERMnux]{Width}},#2}
+}%
+{%
+	\endtcblisting%
+}
+
+%OSX (OK)
+\tcbset{StyleTermOSX/.style={%
+	enhanced,boxrule=1pt,arc=6pt,before skip=\baselineskip,after skip=\baselineskip,%
+	colframe=Termosxgray,colback=lightgray!15,colbacktitle=Termosxgray,colupper=black,coltitle=black,%
+	titlerule=0.4pt,left=2pt,top=2pt,bottom=2pt,right=2pt,middle=2pt,%
+	fonttitle=\bfseries\small\sffamily
+	}
+}
+
+\newcommand{\TermOSXRed}{%
+	\begin{tikzpicture}[thick,anchor=base,baseline]
+		\filldraw[red] (0,0.25em) circle[radius=0.45em] ;
+	\end{tikzpicture}%
+}
+
+\newcommand{\TermOSXOrange}{%
+	\begin{tikzpicture}[thick,anchor=base,baseline]
+		\filldraw[orange] (0,0.25em) circle[radius=0.45em] ;
+	\end{tikzpicture}%
+}
+
+\newcommand{\TermOSXgreen}{%
+	\begin{tikzpicture}[thick,anchor=base,baseline]
+		\filldraw[Termosxgreen] (0,0.25em) circle[radius=0.45em] ;
+	\end{tikzpicture}%
+}
+
+\newcommand{\TermOSXLG}{%
+	\begin{tikzpicture}[thick,anchor=base,baseline]
+		\filldraw[Termosxgray] (0,0.25em) circle[radius=0.45em] ;
+	\end{tikzpicture}%
+}
+
+\setKVdefault[TERMosx]{Title={Terminal Mac},Align={center},Width={\linewidth}}
+
+\newcommand\TermOSXTitle{%
+	\begin{tblr}{colsep=0pt,rowsep=0pt,width=\linewidth,colspec={lX[c]r}}
+		\TermOSXRed~\TermOSXOrange~\TermOSXgreen & \vphantom{p}\useKV[TERMosx]{Title} & \TermOSXLG~\TermOSXLG~\TermOSXLG \\
+	\end{tblr}
+}
+
+\NewDocumentEnvironment{TermMac}{ O{} m }
+{%
+	\restoreKV[TERMosx]%
+	\setKV[TERMosx]{#1}%
+	\tcblisting{StyleTermOSX,{\useKV[TERMosx]{Align}},title={\TermOSXTitle},listing only,listing engine=listings,listing options={style=tcblatex,language={},basicstyle=\footnotesize\ttfamily},width={\useKV[TERMosx]{Width}},#2}
+}%
+{%
+	\endtcblisting%
+}
+
+%****VIEWERS****
+%PDFVIEWER (OK)
+\tcbset{StylePDFViewer/.style={%
+		enhanced,boxrule=1pt,arc=6pt,before skip=\baselineskip,after skip=\baselineskip,%
+		colframe=gray,colback=lightgray!5,colbacktitle=lightgray!15,colupper=black,coltitle=black,titlerule=0.4pt,left=2pt,top=2pt,bottom=2pt,right=2pt,middle=0pt,fonttitle=\bfseries\small\sffamily
+	}
+}
+
+\setKVdefault[PDFViewer]{Title={PDF Viewer},Align={center},Width={\linewidth},Halign={center},Icons=true}
+
+\NewDocumentCommand\PDFVIewerTitle{ s }{%
+	\IfBooleanTF{#1}%
+		{%
+			\begin{tblr}{colsep=4pt,rowsep=0pt,width=\linewidth,colspec={l|[1pt]X[c]|[1pt]c},cells={font=\footnotesize}}
+				\vphantom{p}\useKV[PDFViewer]{Title} && \faIcon[regular]{file-pdf} \\
+			\end{tblr}
+		}%
+		{%
+			\begin{tblr}{colsep=4pt,rowsep=0pt,width=\linewidth,colspec={l|[1pt]l|[1pt]l|[1pt]l|[1pt]X[c]|[1pt]c},cells={font=\footnotesize}}
+				\vphantom{p}\useKV[PDFViewer]{Title} & \faIcon[regular]{folder}~~\faPrint~~\faIcon{pencil-alt} & \faArrowLeft~~\faArrowRight & \faExpand~~\faIcon{expand-alt}~~\faIcon{expand-arrows-alt}&&\faIcon[regular]{file-pdf} \\
+			\end{tblr}
+		}%
+}
+
+\NewDocumentEnvironment{PDFViewer}{ O{} m }
+{%
+	\restoreKV[PDFViewer]%
+	\setKV[PDFViewer]{#1}%
+	\tcolorbox[StylePDFViewer,{\useKV[PDFViewer]{Align}},title={\ifboolKV[PDFViewer]{Icons}{\PDFVIewerTitle}{\PDFVIewerTitle*}},width={\useKV[PDFViewer]{Width}},halign={\useKV[PDFViewer]{Halign}},#2]
+}%
+{%
+	\endtcolorbox%
+}
+
+%IMGVIEWER (OK)
+\tcbset{StyleIMGViewer/.style={%
+		enhanced,boxrule=1pt,arc=6pt,before skip=\baselineskip,after skip=\baselineskip,%
+		colframe=gray,colback=lightgray!5,colbacktitle=lightgray!15,colupper=black,coltitle=black,titlerule=0.4pt,left=2pt,top=2pt,bottom=2pt,right=2pt,middle=0pt,fonttitle=\bfseries\small\sffamily
+	}
+}
+
+\setKVdefault[IMGViewer]{Title={Image Viewer},Align={center},Width={\linewidth},Halign={center},Icons=true}
+
+\NewDocumentCommand\IMGVIewerTitle{ s }{%
+	\IfBooleanTF{#1}%
+		{%
+			\begin{tblr}{colsep=4pt,rowsep=0pt,width=\linewidth,colspec={l|[1pt]X[c]|[1pt]c},cells={font=\footnotesize}}
+				\vphantom{p}\useKV[IMGViewer]{Title} && \faIcon[regular]{file-image} \\
+			\end{tblr}
+		}%
+		{%
+			\begin{tblr}{colsep=4pt,rowsep=0pt,width=\linewidth,colspec={l|[1pt]l|[1pt]l|[1pt]l|[1pt]X[c]|[1pt]c},cells={font=\footnotesize}}
+				\vphantom{p}\useKV[IMGViewer]{Title} & \faIcon[regular]{folder}~~\faPrint~~\faPen~~\faFillDrip~~\faBorderNone& \faArrowLeft~~\faArrowRight & \faExpand~~\faIcon{expand-alt}~~\faIcon{expand-arrows-alt}&&\faIcon[regular]{file-image} \\
+			\end{tblr}
+		}%
+}
+
+\NewDocumentEnvironment{IMGViewer}{ O{} m }
+{%
+	\restoreKV[IMGViewer]%
+	\setKV[IMGViewer]{#1}%
+	\tcolorbox[StyleIMGViewer,{\useKV[IMGViewer]{Align}},title={\ifboolKV[IMGViewer]{Icons}{\IMGVIewerTitle}{\IMGVIewerTitle*}},width={\useKV[IMGViewer]{Width}},halign={\useKV[IMGViewer]{Halign}},#2]
+}%
+{%
+	\endtcolorbox%
+}
+
+\endinput
