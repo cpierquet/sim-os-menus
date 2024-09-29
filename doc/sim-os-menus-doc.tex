@@ -23,8 +23,8 @@
 \hypersetup{pdfborder=0 0 0}
 \usepackage[margin=2cm]{geometry}
 \setlength{\parindent}{0pt}
-\def\TPversion{0.1.0}
-\def\TPdate{13/11/2023}
+\def\TPversion{0.1.3}
+\def\TPdate{28/09/2024}
 \usepackage{soul}
 \sethlcolor{lightgray!25}
 \NewDocumentCommand\MontreCode{ m }{%
@@ -122,7 +122,7 @@ Global styles are mostly fixed, but some customizations are possible.
 
 \subsection{Loading}
 
-To load the package, simply use :
+To load the package, simply use:
 
 \begin{quote}
 \begin{verbatim}
@@ -130,13 +130,13 @@ To load the package, simply use :
 \end{verbatim}
 \end{quote}
 
-The package loads the packages :
+The package loads the packages:
 
 \begin{itemize}
-	\item \MontreCode{tikz} (with \MontreCode{calc,positioning}), \MontreCode{pgf}, \MontreCode{pgffor} ;
-	\item \MontreCode{calc}, \MontreCode{fontawesome5} ;
-	\item \MontreCode{simplekv}, \MontreCode{xintexpr}, \MontreCode{listofitems}, \MontreCode{xstring} ;
-	\item \MontreCode{settobox}, \MontreCode{tabularray} ;
+	\item \MontreCode{tikz} (with \MontreCode{calc,positioning}), \MontreCode{pgf}, \MontreCode{pgffor};
+	\item \MontreCode{calc}, \MontreCode{fontawesome5};
+	\item \MontreCode{simplekv}, \MontreCode{xintexpr}, \MontreCode{listofitems}, \MontreCode{xstring};
+	\item \MontreCode{settobox}, \MontreCode{tabularray};
 	\item \MontreCode{tcolorbox} (with \MontreCode{breakable,fitting,skins,listings,listingsutf8,hooks}).
 \end{itemize}
 
@@ -146,7 +146,10 @@ The package loads the packages :
 
 \begin{quote}
 \begin{verbatim}
-0.1.0 : Initial version
+0.1.3: Fofders/Files like in explorer
+0.1.2: Script editor viewer 'like'
+0.1.1: French version of the commands
+0.1.0: Initial version
 \end{verbatim}
 \end{quote}
 
@@ -156,7 +159,7 @@ The package loads the packages :
 
 \subsection{Context menu}
 
-I order to create a context menu, the command is :
+I order to create a context menu, the command is:
 
 \begin{quote}
 \begin{verbatim}
@@ -165,35 +168,35 @@ I order to create a context menu, the command is :
 \end{verbatim}
 \end{quote}
 
-Optional keys, between \MontreCode{[...]} are :
+Optional keys, between \MontreCode{[...]} are:
 
 \begin{itemize}
-	\item \MontreCode{ColBack} := background color ;
-	\item \MontreCode{ColHL} : = highlight color ;
-	\item \MontreCode{Rounded} := boolean for rounded corners (\MontreCode{true} by default) ;
-	\item \MontreCode{Font} := font for the items (\MontreCode{\textbackslash normalsize\textbackslash normalfont} by default) ;
-	\item \MontreCode{ColItems} := color(s) for the items (\MontreCode{black} by default) ;
-	\item \MontreCode{MarginV} := vertical margin of the lines (\MontreCode{6pt} by default) ;
-	\item \MontreCode{MarginH} := horizontal margin of the lines (\MontreCode{12pt} by default) ;
-	\item \MontreCode{Arrow} := character for the arrow (\MontreCode{\textbackslash faCaretRight} by default) ;
-	\item \MontreCode{ListSeps} := list for the possible sep lines (empty or for all the levels !) ;
-	\item \MontreCode{ListIcons} := list for the possible icons (empty or for all the levels/items !) ;
-	\item \MontreCode{ListOffsets} := list for the possible vertical offset of levels (from 2, \ldots !) (empty or for all the sub-levels !) ;
-	\item \MontreCode{Icons} := boolean for icons (\MontreCode{false} by default) ;
-	\item \MontreCode{Bar} := boolean for small vertical bar with icons (\MontreCode{true} by default) ;
-	\item \MontreCode{Space} := horizontal space between levels (\MontreCode{-0.125} by default).
+	\item \MontreCode{ColBack}: background color;
+	\item \MontreCode{ColHL}: = highlight color;
+	\item \MontreCode{Rounded}: boolean for rounded corners (\MontreCode{true} by default);
+	\item \MontreCode{Font}: font for the items (\MontreCode{\textbackslash normalsize\textbackslash normalfont} by default);
+	\item \MontreCode{ColItems}: color(s) for the items (\MontreCode{black} by default);
+	\item \MontreCode{MarginV}: vertical margin of the lines (\MontreCode{6pt} by default);
+	\item \MontreCode{MarginH}: horizontal margin of the lines (\MontreCode{12pt} by default);
+	\item \MontreCode{Arrow}: character for the arrow (\MontreCode{\textbackslash faCaretRight} by default);
+	\item \MontreCode{ListSeps}: list for the possible sep lines (empty or for all the levels !);
+	\item \MontreCode{ListIcons}: list for the possible icons (empty or for all the levels/items !);
+	\item \MontreCode{ListOffsets}: list for the possible vertical offset of levels (from 2, \ldots !) (empty or for all the sub-levels !);
+	\item \MontreCode{Icons}: boolean for icons (\MontreCode{false} by default);
+	\item \MontreCode{Bar}: boolean for small vertical bar with icons (\MontreCode{true} by default);
+	\item \MontreCode{Space}: horizontal space between levels (\MontreCode{-0.125} by default).
 \end{itemize}
 
 \medskip
 
-The mandatory argument, between \MontreCode{\{...\}}, is given as :
+The mandatory argument, between \MontreCode{\{...\}}, is given as:
 
 \smallskip
 
 \hfill\MontreCode{item1A,item1B,... § item2A,itemp2B,... § ...}\hfill~
 
 \begin{itemize}
-	\item if an item ends with \MontreCode{(*)}, this is the beginning of the next level (\underline{only one} by level !) ;
+	\item if an item ends with \MontreCode{(*)}, this is the beginning of the next level (\underline{only one} by level !);
 	\item if an item ends with \MontreCode{(>)} (\underline{before} optional \MontreCode{(*)}), an arrow is written at the end of the line.
 \end{itemize}
 
@@ -201,11 +204,11 @@ A correct usage of the syntax is necessary for the code !
 
 \vspace{5mm}
 
-A few tips, due to \MontreCode{ListIcons}, \MontreCode{ListOffsets} and \MontreCode{ListSeps} keys, which are \textit{sensitive} :
+A few tips, due to \MontreCode{ListIcons}, \MontreCode{ListOffsets} and \MontreCode{ListSeps} keys, which are \textit{sensitive}:
 
 \begin{itemize}
-	\item \MontreCode{ListIcons} must have the same number of elements than the number of levels/items (with possible empty items) ;
-	\item \MontreCode{ListSeps} must have the same number of elements than the number of levels (with possible empty items) ;
+	\item \MontreCode{ListIcons} must have the same number of elements than the number of levels/items (with possible empty items);
+	\item \MontreCode{ListSeps} must have the same number of elements than the number of levels (with possible empty items);
 	\item \MontreCode{ListOffsets} must have the same number of elements than the numbers of sub-levels (with 0 si no offset !).
 \end{itemize}
 
@@ -236,7 +239,7 @@ A few tips, due to \MontreCode{ListIcons}, \MontreCode{ListOffsets} and \MontreC
 
 \subsection{Terminal}
 
-In order to create a terminal (Win/UNiX/Mac), environments are :
+In order to create a terminal (Win/UNiX/Mac), environments are:
 
 \begin{quote}
 \begin{verbatim}
@@ -257,12 +260,12 @@ In order to create a terminal (Win/UNiX/Mac), environments are :
 \end{verbatim}
 \end{quote}
 
-Optional keys, between \MontreCode{[...]} are :
+Optional keys, between \MontreCode{[...]} are:
 
 \begin{itemize}
-	\item \MontreCode{Title} := title of the terminal (\MontreCode{Terminal Win/UNiX/Mac} by default) ;
-	\item \MontreCode{Align} := horizontal alignment of the box (\MontreCode{center} by default) ;
-	\item \MontreCode{Width} := width of the box (\MontreCode{\textbackslash linewidth} by default).
+	\item \MontreCode{Title}: title of the terminal (\MontreCode{Terminal Win/UNiX/Mac} by default);
+	\item \MontreCode{Align}: horizontal alignment of the box (\MontreCode{center} by default);
+	\item \MontreCode{Width}: width of the box (\MontreCode{\textbackslash linewidth} by default).
 \end{itemize}
 
 \medskip
@@ -274,14 +277,14 @@ The mandatory argument, between \MontreCode{\{...\}}, are options to give to the
 Microsoft Windows [version 10.0.22000.493]
 (c) Microsoft Corporation. Tous droits réservés.
 C:\Users\test>ping ctan.org
-Envoi d'une requête 'ping' sur ctan.org [5.35.249.60] avec 32 octets de données :
-Réponse de 5.35.249.60 : octets=32 temps=35 ms TTL=51
-Réponse de 5.35.249.60 : octets=32 temps=37 ms TTL=51
-Réponse de 5.35.249.60 : octets=32 temps=35 ms TTL=51
-Réponse de 5.35.249.60 : octets=32 temps=39 ms TTL=51
+Envoi d'une requête 'ping' sur ctan.org [5.35.249.60] avec 32 octets de données:
+Réponse de 5.35.249.60: octets=32 temps=35 ms TTL=51
+Réponse de 5.35.249.60: octets=32 temps=37 ms TTL=51
+Réponse de 5.35.249.60: octets=32 temps=35 ms TTL=51
+Réponse de 5.35.249.60: octets=32 temps=39 ms TTL=51
 Statistiques Ping pour 5.35.249.60:
-Paquets : envoyés = 4, reçus = 4, perdus = 0 (perte 0%),
-Durée approximative des boucles en millisecondes :
+Paquets: envoyés = 4, reçus = 4, perdus = 0 (perte 0%),
+Durée approximative des boucles en millisecondes:
 Minimum = 35ms, Maximum = 39ms, Moyenne = 36ms
 \end{TermWin}
 \end{tcblisting}
@@ -304,7 +307,7 @@ PING ctan.org (5.35.249.60) 56(84) bytes of data.
 
 \subsection{Viewers}
 
-In order to create a 'fake' viewer (for \textsf{pdf} or \textsf{img}), environments are :
+In order to create a 'fake' viewer (for \textsf{pdf} or \textsf{img}), environments are:
 
 \begin{quote}
 \begin{verbatim}
@@ -317,17 +320,22 @@ In order to create a 'fake' viewer (for \textsf{pdf} or \textsf{img}), environme
 \begin{IMGViewer}[keys]{tcbox options}
     ....
 \end{IMGViewer}
+
+%----Script editor like
+\begin{PYViewer}[keys]{tcbox options}
+    ....
+\end{PYViewer}
 \end{verbatim}
 \end{quote}
 
-Optional keys, between \MontreCode{[...]} are :
+Optional keys, between \MontreCode{[...]} are:
 
 \begin{itemize}
-	\item \MontreCode{Title} := title of the terminal (\MontreCode{Terminal Windows} by default) ;
-	\item \MontreCode{Align} := horizontal alignment of the box (\MontreCode{center} by default) ;
-	\item \MontreCode{Width} := width of the box (\MontreCode{\textbackslash linewidth} by default) ;
-	\item \MontreCode{Halign} := horizontal alignment fot the content (\MontreCode{left} by default) ;
-	\item \MontreCode{Icons} := boolean for the icons (\MontreCode{true} by default).
+	\item \MontreCode{Title}: title of the viewer;
+	\item \MontreCode{Align}: horizontal alignment of the box (\MontreCode{center} by default);
+	\item \MontreCode{Width}: width of the box (\MontreCode{\textbackslash linewidth} by default);
+	\item \MontreCode{Halign}: horizontal alignment fot the content (\MontreCode{left} by default);
+	\item \MontreCode{Icons}: boolean for the icons (\MontreCode{true} by default).
 \end{itemize}
 
 \medskip
@@ -357,6 +365,127 @@ The mandatory argument, between \MontreCode{\{...\}}, are options to give to the
 \begin{IMGViewer}[Width=12cm]{}
 \includegraphics[width=3cm]{example-image}
 \end{IMGViewer}
+\end{tcblisting}
+
+\begin{tcblisting}{colframe=lightgray,colback=lightgray!5}
+%with listings, or piton, for example
+\begin{PYViewer}[width=12cm]{}
+\begin{lstlisting}%
+    [
+        language=python,basicstyle=\ttfamily\small,
+        keywordstyle=\color{green!50!black},tabsize=4,
+        keywordstyle={[2]\color{magenta}},
+        numbers=left,numbersep=3mm,xleftmargin=5mm,
+        aboveskip=0pt,belowskip=0pt,
+        numberstyle=\footnotesize\ttfamily\color{gray}
+    ]
+nterms = int(input("Entrez un nombre: "))
+
+n1 = 0
+n2 = 1
+
+print("\n la suite Fibonacci est: ")
+print(n1, ",", n2, end=", ")
+
+for i in range(2, nterms):
+    suivant = n1 + n2
+    print(suivant, end=", ")
+
+n1 = n2
+n2 = suivant
+\end{lstlisting}
+\end{PYViewer}
+\end{tcblisting}
+
+\pagebreak
+
+\subsection{Folders/files as in explrer}
+
+The \MontreCode{forest} package, with his library \MontreCode{edges}, can present foldertrees.
+
+\begin{quote}
+\begin{verbatim}
+\begin{ForestDirTree}[keys]{forest options}
+    [folder,FTdir
+        [subfolder1,FTdir]
+        [subfolder2,FTdir
+            [file1,FTfile]
+            [file2,FTfile]
+        ...
+    ]
+        ...
+    ]
+\end{ForestDirTree}
+\end{verbatim}
+\end{quote}
+
+Available \textsf{keys}, betweeen \MontreCode{[...]}, are:
+
+\begin{itemize}
+	\item \MontreCode{font}: font of texts;
+	\item \MontreCode{coliconfolder}: \MontreCode{gray} by default;
+	\item \MontreCode{coliconfile}: \MontreCode{gray} by default;
+	\item \MontreCode{iconfolders}: boolean for folder icons;
+	\item \MontreCode{iconfiles}: boolean for file icons;
+	\item \MontreCode{vsep}: vertical space between items (\MontreCode{0.15em} by default);
+	\item \MontreCode{iconfolder}: icon for folder;
+	\item \MontreCode{iconfile}: icone for file.
+\end{itemize}
+
+\medskip
+
+\textsf{Folders} need to be given within \MontreCode{<folder\_name>,FTdir}.
+
+\textsf{Files} need to be given within \MontreCode{<file\_name>,FTfile}.
+
+\medskip
+
+Mandatory argument, between \MontreCode{\{...\}}, corresponds to \textsf{forest} specific commands.
+
+\begin{tcblisting}{colframe=lightgray,colback=lightgray!5}
+\begin{ForestDirTree}{}
+    [folder,FTdir
+        [subfolder1,FTdir]
+        [subfolder2,FTdir
+            [file1,FTfile]
+            [file2,FTfile]
+        ]
+        [file3,FTfile]
+    ]
+\end{ForestDirTree}
+\end{tcblisting}
+
+\begin{tcblisting}{colframe=lightgray,colback=lightgray!5}
+\begin{ForestDirTree}%
+    [font=\sffamily,coliconfolder=yellow!50!pink,iconfiles,coliconfile=teal,vsep=0.5em]%
+    {}
+    [folder,FTdir
+        [subfolder1,FTdir]
+        [subfolder2,FTdir
+            [file1,FTfile]
+            [file2,FTfile]
+        ]
+        [file3,FTfile]
+    ]
+\end{ForestDirTree}
+\end{tcblisting}
+
+Styles are global, but can be locally defined.
+
+\begin{tcblisting}{colframe=lightgray,colback=lightgray!5}
+\tikzset{FTedge/.style={thick,->,densely dashed,red,>=latex}}
+\begin{ForestDirTree}%
+    [font=\sffamily,coliconfolder=yellow!50!pink,iconfiles,coliconfile=teal,vsep=0.5em]%
+    {l sep=2em}
+    [folder,FTdir
+        [subfolder1,FTdir]
+        [subfolder2,FTdir
+            [file1,FTfile]
+            [file2,FTfile]
+        ]
+        [file3,FTfile]
+    ]
+\end{ForestDirTree}
 \end{tcblisting}
 
 \end{document}
